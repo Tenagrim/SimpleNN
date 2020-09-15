@@ -39,15 +39,15 @@ namespace SimpleNN
 
         public NN(int[] sizes)
         {
-            this.sizes = sizes;
-            layers = new float[sizes.Length][];
-            for (int i = 0; i < sizes.Length; i++)
+            this.sizes = (int[])sizes.Clone();
+            layers = new float[this.sizes.Length][];
+            for (int i = 0; i < this.sizes.Length; i++)
             {
                 if (i != sizes.Length - 1)
                 {
-                    layers[i] = new float[sizes[i] + 1];
+                    layers[i] = new float[this.sizes[i] + 1];
                     layers[i][Sizes[i]] = 1.0F;
-                    sizes[i]++;
+                    this.sizes[i]++;
                 }
                 else
                     layers[i] = new float[sizes[i]];
@@ -158,6 +158,13 @@ namespace SimpleNN
                 res[i, 0] = a[i];
             return res;
         }
+
+        private float activation(float x)
+        {
+            return 1.0F / (1.0F + (float)Math.Exp(-x));     // sigmoid
+
+            //return x > 0 ? 1 : 0;                         // relu
+        }
         private float prev_sum(int i, int j)
         {
             float res = 0;
@@ -167,14 +174,6 @@ namespace SimpleNN
             }
             return res;
         }
-
-        private float activation(float x)
-        {
-            return 1.0F / (1.0F + (float)Math.Exp(-x));   // sigmoid
-
-            //return x > 0 ? 1 : 0;                           // relu
-        }
-
         public void Calc()
         {
             int len;
@@ -219,8 +218,8 @@ namespace SimpleNN
 
             for (int i = 0; i < layers.Last().Length; i++)
             {
-                for (int j = 0; j < layers[layers.Length - 2].Length -1; j++)
-                    weights[weights.Length - 1][j, i] += l_c * errors[i] * (layers.Last()[j] * (1 - layers.Last()[j])) * layers[0][j];
+                for (int j = 0; j < layers[layers.Length - 2].Length; j++)
+                    weights[weights.Length - 1][j, i] += l_c * errors[i] * (layers.Last()[i] * (1 - layers.Last()[i])) * layers[0][j];
             }
         }
     }
