@@ -1,0 +1,9 @@
+T:\Projects\VisualStudio\SimpleNN\SimpleNN\bin\Debug\SimpleNN.exe.config
+T:\Projects\VisualStudio\SimpleNN\SimpleNN\bin\Debug\SimpleNN.exe
+T:\Projects\VisualStudio\SimpleNN\SimpleNN\bin\Debug\SimpleNN.pdb
+T:\Projects\VisualStudio\SimpleNN\SimpleNN\obj\Debug\SimpleNN.csprojAssemblyReference.cache
+T:\Projects\VisualStudio\SimpleNN\SimpleNN\obj\Debug\SimpleNN.Form1.resources
+T:\Projects\VisualStudio\SimpleNN\SimpleNN\obj\Debug\SimpleNN.Properties.Resources.resources
+T:\Projects\VisualStudio\SimpleNN\SimpleNN\obj\Debug\SimpleNN.csproj.GenerateResource.cache
+T:\Projects\VisualStudio\SimpleNN\SimpleNN\obj\Debug\SimpleNN.exe
+T:\Projects\VisualStudio\SimpleNN\SimpleNN\obj\Debug\SimpleNN.pdb
