@@ -13,27 +13,25 @@ namespace SimpleNN
         public float[][] Layers { get { return layers; } }
         public float[][,] Weights { get { return weights; } }
         public float[] Output { get { return layers.Last(); } }
+        public float[][] Errors { get { return errors_; } }
 
         private float[][] layers;
         private int[] sizes;
         private float[][,] weights;
+        private float[][] errors_;
         static Random rand = new Random();
         private float l_c = 0.1F;
 
         public NN()
         {
-            //sizes = new int[] { 13, 15, 15, 4 };
-            //rand = new Random();
-
             sizes = new int[] { 9, 10, 10, 4 };
-            //this.sizes = sizes;
             layers = new float[sizes.Length][];
             for (int i = 0; i < sizes.Length; i++)
             {
                 layers[i] = new float[sizes[i]];
                 layers[i][Sizes[i] - 1] = 1.0F;
             }
-
+            errors_ = ErrorArr(layers);
             RandomFill(ref weights);
         }
 
@@ -52,9 +50,10 @@ namespace SimpleNN
                 else
                     layers[i] = new float[sizes[i]];
             }
+             errors_ = ErrorArr(layers);
             RandomFill(ref weights);
         }
-
+       
         public NN(NN reference)
         {
             sizes = reference.Sizes;
@@ -65,8 +64,8 @@ namespace SimpleNN
                 layers[i] = new float[sizes[i]];
                 layers[i][Sizes[i] - 1] = 1.0F;
             }
-
             weights = (float[][,])reference.weights.Clone();
+             errors_ = ErrorArr(layers);
             //Mutate();
         }
 
@@ -98,7 +97,7 @@ namespace SimpleNN
                     }
                 }
             }
-
+             errors_ = ErrorArr(layers);
         }
         private void RandomFill(ref float[][,] weights)
         {
@@ -199,6 +198,14 @@ namespace SimpleNN
             return (x < 0) ? 0 : 1;
         }
 
+        private float[][] ErrorArr(float[][] ref_)
+        {
+            float[][] res = new float[ref_.Length-1][];
+            for (int i = 1; i < ref_.Length; i++)
+                res[i-1] = new float[ref_[i].Length];
+            return res;
+        }
+
         public void backpropagation(float[]input, float[] ref_values)
         {
             Input(input);
@@ -210,17 +217,30 @@ namespace SimpleNN
                 return ;
 
             errors = new List<float>(layers.Last());
+            
             //Вычисление ошибки выходного слоя
             for (int j = 0; j < layers.Last().Length; j++)
-                //errors[j] = layers.Last()[j] * (1 - layers.Last()[j]) * (ref_values[j] - layers.Last()[j]);
-                errors[j] = ref_values[j] - layers.Last()[j];
-            //Корректировка весов выходного слоя
-
-            for (int i = 0; i < layers.Last().Length; i++)
+                errors_[errors_.Length-1][j] = ref_values[j] - layers.Last()[j];
+            //Вычисление ошибки остальных слоев
+            for (int i = layers.Length - 3; i >= 0; i--) 
             {
-                for (int j = 0; j < layers[layers.Length - 2].Length; j++)
-                    weights[weights.Length - 1][j, i] += l_c * errors[i] * (layers.Last()[i] * (1 - layers.Last()[i])) * layers[0][j];
+                for (int j = errors_.Length-2; j >= 0; j--)
+                {
+                    errors_[i][j] = 0;
+                    for (int k = 0; k < errors_[i + 1].Length; k++)           //<---
+                        errors_[i][j] += errors_[i + 1][k] * weights[i][j, k];
+                }
             }
+
+
+            //Корректировка весов всех слоев
+            for (int k = layers.Length - 1; k >= 1; k--)
+            {
+                for (int i = 0; i < layers[k].Length; i++)
+                    for (int j = 0; j < layers[k-1].Length; j++)
+                        weights[k-1][j, i] += l_c * errors_[k-1][i] * (layers[k][i] * (1 - layers[k][i])) * layers[k-1][j];
+            }
+        
         }
     }
 }
