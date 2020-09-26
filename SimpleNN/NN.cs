@@ -20,7 +20,7 @@ namespace SimpleNN
         private float[][,] weights;
         private float[][] errors_;
         static Random rand = new Random();
-        private float l_c = 0.1F;
+        private float l_c = 0.9F;
 
         public NN()
         {
@@ -200,9 +200,9 @@ namespace SimpleNN
 
         private float[][] ErrorArr(float[][] ref_)
         {
-            float[][] res = new float[ref_.Length-1][];
+            float[][] res = new float[ref_.Length - 1][];
             for (int i = 1; i < ref_.Length; i++)
-                res[i-1] = new float[ref_[i].Length];
+                res[i - 1] = new float[ref_[i].Length];
             return res;
         }
 
@@ -222,23 +222,23 @@ namespace SimpleNN
             for (int j = 0; j < layers.Last().Length; j++)
                 errors_[errors_.Length-1][j] = ref_values[j] - layers.Last()[j];
             //Вычисление ошибки остальных слоев
-            for (int i = layers.Length - 3; i >= 0; i--) 
+            for (int i = errors_.Length -2; i >= 0; i--) 
             {
-                for (int j = errors_.Length-2; j >= 0; j--)
+                for (int j = errors_[i].Length-1; j >= 0; j--)
                 {
                     errors_[i][j] = 0;
                     for (int k = 0; k < errors_[i + 1].Length; k++)           //<---
-                        errors_[i][j] += errors_[i + 1][k] * weights[i][j, k];
+                        errors_[i][j] += errors_[i + 1][k] * weights[i+1][j, k];
                 }
             }
 
 
             //Корректировка весов всех слоев
-            for (int k = layers.Length - 1; k >= 1; k--)
+            for (int k = 0; k < weights.Length; k++)
             {
-                for (int i = 0; i < layers[k].Length; i++)
-                    for (int j = 0; j < layers[k-1].Length; j++)
-                        weights[k-1][j, i] += l_c * errors_[k-1][i] * (layers[k][i] * (1 - layers[k][i])) * layers[k-1][j];
+                for (int i = 0; i < weights[k].GetLength(0); i++)
+                    for (int j = 0; j < weights[k].GetLength(1); j++)
+                        weights[k][i, j] += l_c * errors_[k][j] * (layers[k+1][j] * (1 - layers[k+1][j])) * layers[k][i];
             }
         
         }

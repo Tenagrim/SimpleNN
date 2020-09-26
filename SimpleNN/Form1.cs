@@ -18,7 +18,7 @@ namespace SimpleNN
         private Pen pen;
         private Brush brush;
         private float circle_size = 10;
-        private int[] sizes = new int[] { 2,3,3, 1 };
+        private int[] sizes = new int[] { 2,7, 1 };
         public Form1()
         {
             InitializeComponent();
